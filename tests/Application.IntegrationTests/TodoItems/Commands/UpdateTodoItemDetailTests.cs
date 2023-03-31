@@ -52,6 +52,7 @@ public class UpdateTodoItemDetailTests : BaseTestFixture
         item.Should().NotBeNull();
         item!.ListId.Should().Be(command.ListId);
         item.Note.Should().Be(command.Note);
+        item.ItemColour.Should().Be(command.ItemColour);
         item.Priority.Should().Be(command.Priority);
         item.LastModifiedBy.Should().NotBeNull();
         item.LastModifiedBy.Should().Be(userId);

@@ -14,9 +14,13 @@ public class TodoItemDto : IMapFrom<TodoItem>
 
     public bool Done { get; set; }
 
+    public string? ItemColour { get; set; }
+
     public int Priority { get; set; }
 
     public string? Note { get; set; }
+    public int? TagsId { get; set; }
+    public TodoTagDto? Tags { get; set; }
 
     public void Mapping(Profile profile)
     {

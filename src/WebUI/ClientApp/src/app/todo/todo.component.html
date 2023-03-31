@@ -4,20 +4,27 @@
 
 <p *ngIf="!lists"><em>Loading...</em></p>
 
+<div class="bg-light">
+  <div class="d-flex flex-row justify-content-between">
+    <div class="d-flex p-2">
+      <input class="form-group me-2" type="search" #searchInput
+             placeholder="Search" aria-label="Search">
+    </div>
+  </div>
+</div>
 <div *ngIf="lists">
-
   <div class="row">
     <div class="col-sm-4">
       <div class="clearfix">
         <h2 class="float-start">Lists</h2>
         <button class="btn btn-default float-end" title="New List..."
-          (click)="showNewListModal(newListModalTemplate)">
+                (click)="showNewListModal(newListModalTemplate)">
           <i class="bi bi-journal-plus"></i>
         </button>
       </div>
       <ul class="list-group">
         <li *ngFor="let list of lists; index as i" class="list-group-item"
-          [ngClass]="{ 'active': selectedList == list }" (click)="selectedList = list">
+            [ngClass]="{ 'active': selectedList == list }" (click)="selectedList = list">
           <div class="clearfix">
             <div class="float-start">
               {{ list.title }}
@@ -33,37 +40,41 @@
       <div class="clearfix">
         <h2 class="float-start">{{ selectedList.title }}</h2>
         <button id="listOptions" class="btn btn-default float-end" title="List Options..."
-          (click)="showListOptionsModal(listOptionsModalTemplate)">
+                (click)="showListOptionsModal(listOptionsModalTemplate)">
           <i class="bi bi-three-dots-vertical"></i>
         </button>
       </div>
       <ul id="todo-items" class="list-group mb-2">
-        <li class="list-group-item" *ngFor="let item of selectedList.items; index as i">
+        <li class="list-group-item" [ngStyle]="{'background-color': item.itemColour}" *ngFor="let item of selectedList.items; index as i">
           <div class="d-flex">
             <div class="todo-item-checkbox">
               <input type="checkbox" [(ngModel)]="item.done" (change)="updateItem(item)" />
             </div>
             <div class="flex-fill">
               <input id="{{ 'itemTitle' + i }}" *ngIf="item == selectedItem" type="text"
-                class="form-control item-input-control" [(ngModel)]="item.title" (keyup.enter)="updateItem(item, true)"
-                (blur)="updateItem(item)" autofocus="autofocus" />
+                     class="form-control item-input-control" [(ngModel)]="item.title" (keyup.enter)="updateItem(item, true)"
+                     (blur)="updateItem(item)" autofocus="autofocus" />
               <div class="todo-item-title" *ngIf="item != selectedItem" [ngClass]="{ 'done-todo': item.done }"
-                (click)="editItem(item, 'itemTitle' + i)" class="form-control item-input-control">
+                   (click)="editItem(item, 'itemTitle' + i)" class="form-control item-input-control">
                 <span>{{ item.title }}</span>
               </div>
             </div>
             <div class="todo-item-commands">
               <button *ngIf="item.id != 0" (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
-                class="btn btn-default btn-xs" role="button">
+                      class="btn btn-default btn-xs" role="button">
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
             </div>
           </div>
+          <div *ngIf="item?.tags?.name != null" class="text-center tag"><p>#{{item?.tags?.name}}</p></div>
         </li>
         <li class="list-group-item" (click)="addItem()">
           <button class="btn btn-default">Add Item...</button>
         </li>
       </ul>
+      <div class="float-end">
+        <button class=" btn btn-default btn-xs" (click)="showTagsModal(tagsModalTemplate)">Add Tags</button>
+      </div>
     </div>
   </div>
 </div>
@@ -83,7 +94,7 @@
     <div class="form-group">
       <label for="inputListTitle">Title</label>
       <input type="text" class="form-control" id="inputListTitle" placeholder="List name..."
-        [(ngModel)]="listOptionsEditor.title" (keyup.enter)="updateListOptions()" />
+             [(ngModel)]="listOptionsEditor.title" (keyup.enter)="updateListOptions()" />
     </div>
     <div *ngIf="debug">
       <pre>{{ listOptionsEditor | json }}</pre>
@@ -127,6 +138,29 @@
         <label for="note">Note</label>
         <textarea id="note" class="form-control" rows="3" formControlName="note"></textarea>
       </div>
+      <div class="row">
+        <div class="form-inline col-sm-6">
+          <label for="tag">tag's</label>
+          <select class="form-control" formControlName="tagsId">
+            <option [ngValue]="tag.id" *ngFor="let tag of tagLists">{{ tag.name }}</option>
+          </select>
+          <div (click)="removeTag()" style="margin-left:2px">
+            <a class="link-primary">remove tag</a>
+          </div>
+        </div>
+        <div class="form-group col-sm-2">
+          <label class="" for="color">Color</label>
+
+          <input style="min-height:35px; border-radius:4px"
+                 type="text"
+                 [value]="color"
+                 [style.background]="color"
+                 [(colorPicker)]="color"
+                 formControlName="itemColour"
+                 (colorPickerChange)="onChangeColor($event)" />
+        </div>
+      </div>
+
     </form>
     <div *ngIf="debug">
       <pre>{{ itemDetailsFormGroup.value | json }}</pre>
@@ -177,7 +211,7 @@
     <div class="form-group">
       <label for="title">Title</label>
       <input type="text" class="form-control" id="title" placeholder="List title..." [(ngModel)]="newListEditor.title"
-        [ngClass]="{ 'is-invalid': newListEditor.error }" (keyup.enter)="addList()" />
+             [ngClass]="{ 'is-invalid': newListEditor.error }" (keyup.enter)="addList()" />
       <div *ngIf="newListEditor.error" class="invalid-feedback">
         {{ newListEditor.error }}
       </div>
@@ -193,3 +227,49 @@
     </div>
   </div>
 </ng-template>
+<!--{{deleting ? 'Deleting ' + deleteCountDown + ' ...' : 'Delete'}}-->
+<ng-template #tagsModalTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Tags</h4>
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="tagsModalRef.hide()">
+      ="
+      "v
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <select class="form-control mt-2 w-50s" style="max-height:40px" [(ngModel)]="selectedSort" (ngModelChange)="filterItemByTag()">
+      <option value="1">Most Used Tag</option>
+      <option value="2">least Used Tag</option>
+    </select>
+    <br/>
+    <div class="list-group mb-2 tag-list">
+      <ul class="list-group">
+        <li class="list-group-item" *ngFor="let tag of tagLists; index as i">
+          <div class="d-flex">
+            <div class="flex-fill" (click)="editTag(tag)">
+              <span>{{tag.name}}</span>
+            </div>
+            <div class="todo-item-commands">
+              <button class="btn btn-default btn-xs" (click)="deleteTag(tag.id)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+    <form [formGroup]="tagsFormGroup" class="form">
+      <div class="form-group">
+        <label for="tag">Tag's Name</label>
+        <input type="text" id="tag" class="form-control" rows="3" formControlName="name" />
+      </div>
+      <br />
+      <div class="float-end">
+        <button (click)="tagsModalRef.hide()" class="btn btn-default">Cancel</button>
+        <button (click)="updateTag()" *ngIf="selectedTag?.id != undefined" class="btn btn-primary">update</button>
+        <button (click)="addTag()" *ngIf="selectedTag?.id == undefined" class="btn btn-primary">save</button>
+      </div>
+    </form>
+  </div>

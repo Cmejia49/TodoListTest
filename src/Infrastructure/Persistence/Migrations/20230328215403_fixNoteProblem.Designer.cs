@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Todo_App.Infrastructure.Persistence;
 
@@ -11,9 +12,10 @@ using Todo_App.Infrastructure.Persistence;
 namespace Todo_App.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230328215403_fixNoteProblem")]
+    partial class fixNoteProblem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,9 +340,6 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("Reminder")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("TagsId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -349,8 +348,6 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ListId");
-
-                    b.HasIndex("TagsId");
 
                     b.ToTable("TodoItems");
                 });
@@ -383,36 +380,6 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TodoLists");
-                });
-
-            modelBuilder.Entity("Todo_App.Domain.Entities.TodoTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TodoTags");
                 });
 
             modelBuilder.Entity("Todo_App.Infrastructure.Identity.ApplicationUser", b =>
@@ -539,14 +506,7 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Todo_App.Domain.Entities.TodoTag", "Tags")
-                        .WithMany("Items")
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.Navigation("List");
-
-                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Todo_App.Domain.Entities.TodoList", b =>
@@ -573,11 +533,6 @@ namespace Todo_App.Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("Todo_App.Domain.Entities.TodoList", b =>
-                {
-                    b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("Todo_App.Domain.Entities.TodoTag", b =>
                 {
                     b.Navigation("Items");
                 });
