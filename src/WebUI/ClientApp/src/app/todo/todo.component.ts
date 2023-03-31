@@ -28,11 +28,13 @@ export class TodoComponent implements OnInit {
   listOptionsModalRef: BsModalRef;
   deleteListModalRef: BsModalRef;
   itemDetailsModalRef: BsModalRef;
+   color: string = '#FFFFFF';
   itemDetailsFormGroup = this.fb.group({
     id: [null],
     listId: [null],
     priority: [''],
-    note: ['']
+    note: [''],
+    itemColour:['']
   });
 
 
@@ -139,7 +141,7 @@ export class TodoComponent implements OnInit {
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
     this.selectedItem = item;
     this.itemDetailsFormGroup.patchValue(this.selectedItem);
-
+    this.color = item.itemColour;
     this.itemDetailsModalRef = this.modalService.show(template);
     this.itemDetailsModalRef.onHidden.subscribe(() => {
         this.stopDeleteCountDown();
@@ -160,14 +162,19 @@ export class TodoComponent implements OnInit {
           this.selectedItem.listId = item.listId;
           this.lists[listIndex].items.push(this.selectedItem);
         }
-
         this.selectedItem.priority = item.priority;
         this.selectedItem.note = item.note;
+        this.selectedItem.itemColour = item.itemColour;
         this.itemDetailsModalRef.hide();
         this.itemDetailsFormGroup.reset();
       },
       error => console.error(error)
     );
+  }
+
+  public onChangeColor(itemColour: string): void {
+    this.color = itemColour;
+    this.itemDetailsFormGroup.patchValue({ itemColour });
   }
 
   addItem() {
@@ -261,4 +268,5 @@ export class TodoComponent implements OnInit {
     this.deleteCountDown = 0;
     this.deleting = false;
   }
+  
 }

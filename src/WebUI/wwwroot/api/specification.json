@@ -487,6 +487,10 @@
           "priority": {
             "$ref": "#/components/schemas/PriorityLevel"
           },
+          "itemColour": {
+            "type": "string",
+            "nullable": true
+          },
           "note": {
             "type": "string",
             "nullable": true
@@ -583,6 +587,10 @@
           },
           "done": {
             "type": "boolean"
+          },
+          "itemColour": {
+            "type": "string",
+            "nullable": true
           },
           "priority": {
             "type": "integer",

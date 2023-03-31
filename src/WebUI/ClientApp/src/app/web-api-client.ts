@@ -853,6 +853,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
     id?: number;
     listId?: number;
     priority?: PriorityLevel;
+    itemColour?: string | undefined;
     note?: string | undefined;
 
     constructor(data?: IUpdateTodoItemDetailCommand) {
@@ -869,6 +870,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
             this.id = _data["id"];
             this.listId = _data["listId"];
             this.priority = _data["priority"];
+            this.itemColour = _data["itemColour"];
             this.note = _data["note"];
         }
     }
@@ -885,6 +887,7 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
         data["id"] = this.id;
         data["listId"] = this.listId;
         data["priority"] = this.priority;
+        data["itemColour"] = this.itemColour;
         data["note"] = this.note;
         return data;
     }
@@ -894,6 +897,7 @@ export interface IUpdateTodoItemDetailCommand {
     id?: number;
     listId?: number;
     priority?: PriorityLevel;
+    itemColour?: string | undefined;
     note?: string | undefined;
 }
 
@@ -1061,6 +1065,7 @@ export class TodoItemDto implements ITodoItemDto {
     listId?: number;
     title?: string | undefined;
     done?: boolean;
+    itemColour?: string | undefined;
     priority?: number;
     note?: string | undefined;
 
@@ -1079,6 +1084,7 @@ export class TodoItemDto implements ITodoItemDto {
             this.listId = _data["listId"];
             this.title = _data["title"];
             this.done = _data["done"];
+            this.itemColour = _data["itemColour"];
             this.priority = _data["priority"];
             this.note = _data["note"];
         }
@@ -1097,6 +1103,7 @@ export class TodoItemDto implements ITodoItemDto {
         data["listId"] = this.listId;
         data["title"] = this.title;
         data["done"] = this.done;
+        data["itemColour"] = this.itemColour;
         data["priority"] = this.priority;
         data["note"] = this.note;
         return data;
@@ -1108,6 +1115,7 @@ export interface ITodoItemDto {
     listId?: number;
     title?: string | undefined;
     done?: boolean;
+    itemColour?: string | undefined;
     priority?: number;
     note?: string | undefined;
 }
