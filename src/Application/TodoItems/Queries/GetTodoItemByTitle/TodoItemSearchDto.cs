@@ -13,8 +13,6 @@ public class TodoItemSearchDto : IMapFrom<TodoItem>
 {
     public int ListId { get; set; }
 
-    public int? TagsId { get; set; }
-
     public string? Title { get; set; }
 
     public string? Note { get; set; }

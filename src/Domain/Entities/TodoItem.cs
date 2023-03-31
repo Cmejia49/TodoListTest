@@ -4,8 +4,6 @@ public class TodoItem : BaseAuditableEntity
 {
     public int ListId { get; set; }
 
-    public int? TagsId { get; set; }
-
     public string Title { get; set; }
 
     public string? Note { get; set; }

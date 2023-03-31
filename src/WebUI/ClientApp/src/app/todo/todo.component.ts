@@ -44,10 +44,6 @@ export class TodoComponent implements OnInit {
     itemColour: [''],
   });
 
- tagsFormGroup = this.fb.group({
-    id: [null],
-   name: [''],
-  });
 
   @ViewChild('searchInput', { static: true }) itemSearchInput!: ElementRef;
 
