@@ -4,9 +4,15 @@ public class TodoItem : BaseAuditableEntity
 {
     public int ListId { get; set; }
 
-    public string? Title { get; set; }
+    public int? TagsId { get; set; }
+
+    public string Title { get; set; }
 
     public string? Note { get; set; }
+
+    public string? ItemColour { get; set; }
+
+    public int? Status { get; set; }
 
     public PriorityLevel Priority { get; set; }
 

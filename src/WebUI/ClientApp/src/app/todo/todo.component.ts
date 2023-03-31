@@ -1,7 +1,10 @@
-import { Component, TemplateRef, OnInit } from '@angular/core';
+import { Component, TemplateRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 import {
+
   TodoListsClient, TodoItemsClient,
   TodoListDto, TodoItemDto, PriorityLevelDto,
   CreateTodoListCommand, UpdateTodoListCommand,
@@ -28,13 +31,25 @@ export class TodoComponent implements OnInit {
   listOptionsModalRef: BsModalRef;
   deleteListModalRef: BsModalRef;
   itemDetailsModalRef: BsModalRef;
+  color: string = '#FFFFFF';
+  searchTitleChange = new Subject<string>();
+  title: string;
+  searching = true;
+  selectedSort = null;
   itemDetailsFormGroup = this.fb.group({
     id: [null],
     listId: [null],
     priority: [''],
-    note: ['']
+    note: [''],
+    itemColour: [''],
   });
 
+ tagsFormGroup = this.fb.group({
+    id: [null],
+   name: [''],
+  });
+
+  @ViewChild('searchInput', { static: true }) itemSearchInput!: ElementRef;
 
   constructor(
     private listsClient: TodoListsClient,
@@ -54,6 +69,7 @@ export class TodoComponent implements OnInit {
       },
       error => console.error(error)
     );
+
   }
 
   // Lists
@@ -125,7 +141,7 @@ export class TodoComponent implements OnInit {
   }
 
   deleteListConfirmed(): void {
-    this.listsClient.delete(this.selectedList.id).subscribe(
+    this.listsClient.softDelete(this.selectedList.id).subscribe(
       () => {
         this.deleteListModalRef.hide();
         this.lists = this.lists.filter(t => t.id !== this.selectedList.id);
@@ -139,7 +155,7 @@ export class TodoComponent implements OnInit {
   showItemDetailsModal(template: TemplateRef<any>, item: TodoItemDto): void {
     this.selectedItem = item;
     this.itemDetailsFormGroup.patchValue(this.selectedItem);
-
+    this.color = item.itemColour;
     this.itemDetailsModalRef = this.modalService.show(template);
     this.itemDetailsModalRef.onHidden.subscribe(() => {
         this.stopDeleteCountDown();
@@ -160,15 +176,22 @@ export class TodoComponent implements OnInit {
           this.selectedItem.listId = item.listId;
           this.lists[listIndex].items.push(this.selectedItem);
         }
-
+        console.log(item);
         this.selectedItem.priority = item.priority;
         this.selectedItem.note = item.note;
+        this.selectedItem.itemColour = item.itemColour;
         this.itemDetailsModalRef.hide();
         this.itemDetailsFormGroup.reset();
       },
       error => console.error(error)
     );
   }
+
+  public onChangeColor(itemColour: string): void {
+    this.color = itemColour;
+    this.itemDetailsFormGroup.patchValue({ itemColour });
+  }
+
 
   addItem() {
     const item = {
@@ -246,7 +269,7 @@ export class TodoComponent implements OnInit {
       const itemIndex = this.selectedList.items.indexOf(this.selectedItem);
       this.selectedList.items.splice(itemIndex, 1);
     } else {
-      this.itemsClient.delete(item.id).subscribe(
+      this.itemsClient.softDelete(item.id).subscribe(
         () =>
         (this.selectedList.items = this.selectedList.items.filter(
           t => t.id !== item.id
@@ -261,4 +284,17 @@ export class TodoComponent implements OnInit {
     this.deleteCountDown = 0;
     this.deleting = false;
   }
+
+
+  searchTodoItem(title: string){
+    let id = this.selectedList.id;
+    this.itemsClient.todoItemSearch(id, title, 1, 10).subscribe(
+      result => {
+        console.log(result);
+        this.selectedList.items = result.items;
+        this.searching = false;
+      }, error => { console.error(error); this.searching = false; }
+    )
+  }
+
 }

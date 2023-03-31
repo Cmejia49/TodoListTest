@@ -1,4 +1,6 @@
-﻿namespace Todo_App.Application.TodoLists.Queries.GetTodos;
+﻿
+
+namespace Todo_App.Application.TodoLists.Queries.GetTodos;
 
 public class TodosVm
 {

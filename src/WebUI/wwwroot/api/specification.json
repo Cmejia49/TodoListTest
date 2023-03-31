@@ -86,6 +86,64 @@
         }
       }
     },
+    "/api/TodoItems/TodoItemSearch": {
+      "get": {
+        "tags": [
+          "TodoItems"
+        ],
+        "operationId": "TodoItems_TodoItemSearch",
+        "parameters": [
+          {
+            "name": "ListId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 4
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListOfTodoItemSearchDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/TodoItems/{id}": {
       "put": {
         "tags": [
@@ -191,6 +249,39 @@
           "required": true,
           "x-position": 2
         },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/TodoItems/SoftDelete/{id}": {
+      "delete": {
+        "tags": [
+          "TodoItems"
+        ],
+        "operationId": "TodoItems_SoftDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -364,6 +455,39 @@
         }
       }
     },
+    "/api/TodoLists/SoftDelete/{id}": {
+      "delete": {
+        "tags": [
+          "TodoLists"
+        ],
+        "operationId": "TodoLists_SoftDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/WeatherForecast": {
       "get": {
         "tags": [
@@ -432,6 +556,11 @@
             "type": "integer",
             "format": "int32"
           },
+          "tagsId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "title": {
             "type": "string",
             "nullable": true
@@ -441,6 +570,85 @@
           }
         }
       },
+      "PaginatedListOfTodoItemSearchDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TodoItemSearchDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TodoItemSearchDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "listId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tagsId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "itemColour": {
+            "type": "string",
+            "nullable": true
+          },
+          "priority": {
+            "$ref": "#/components/schemas/PriorityLevel"
+          },
+          "done": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PriorityLevel": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "None",
+          "Low",
+          "Medium",
+          "High"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
       "CreateTodoItemCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -448,6 +656,11 @@
           "listId": {
             "type": "integer",
             "format": "int32"
+          },
+          "tagsId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           },
           "title": {
             "type": "string",
@@ -487,27 +700,20 @@
           "priority": {
             "$ref": "#/components/schemas/PriorityLevel"
           },
+          "itemColour": {
+            "type": "string",
+            "nullable": true
+          },
           "note": {
             "type": "string",
             "nullable": true
+          },
+          "tagsId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         }
-      },
-      "PriorityLevel": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "None",
-          "Low",
-          "Medium",
-          "High"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
       },
       "TodosVm": {
         "type": "object",
@@ -553,6 +759,11 @@
             "type": "string",
             "nullable": true
           },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "colour": {
             "type": "string",
             "nullable": true
@@ -584,9 +795,18 @@
           "done": {
             "type": "boolean"
           },
+          "itemColour": {
+            "type": "string",
+            "nullable": true
+          },
           "priority": {
             "type": "integer",
             "format": "int32"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           },
           "note": {
             "type": "string",

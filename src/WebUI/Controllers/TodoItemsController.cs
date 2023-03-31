@@ -2,8 +2,10 @@
 using Todo_App.Application.Common.Models;
 using Todo_App.Application.TodoItems.Commands.CreateTodoItem;
 using Todo_App.Application.TodoItems.Commands.DeleteTodoItem;
+using Todo_App.Application.TodoItems.Commands.SoftDeleteTodoItem;
 using Todo_App.Application.TodoItems.Commands.UpdateTodoItem;
 using Todo_App.Application.TodoItems.Commands.UpdateTodoItemDetail;
+using Todo_App.Application.TodoItems.Queries.GetTodoItemByName;
 using Todo_App.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 
 namespace Todo_App.WebUI.Controllers;
@@ -12,6 +14,12 @@ public class TodoItemsController : ApiControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PaginatedList<TodoItemBriefDto>>> GetTodoItemsWithPagination([FromQuery] GetTodoItemsWithPaginationQuery query)
+    {
+        return await Mediator.Send(query);
+    }
+
+    [HttpGet("[action]")]
+    public async Task<ActionResult<PaginatedList<TodoItemSearchDto>>> TodoItemSearch([FromQuery] GetTodoItemByTitleQuery query)
     {
         return await Mediator.Send(query);
     }
@@ -52,6 +60,14 @@ public class TodoItemsController : ApiControllerBase
     public async Task<ActionResult> Delete(int id)
     {
         await Mediator.Send(new DeleteTodoItemCommand(id));
+
+        return NoContent();
+    }
+
+    [HttpDelete("SoftDelete/{id}")]
+    public async Task<ActionResult> SoftDelete(int id)
+    {
+        await Mediator.Send(new SoftDeleteTodoItemCommand(id));
 
         return NoContent();
     }
