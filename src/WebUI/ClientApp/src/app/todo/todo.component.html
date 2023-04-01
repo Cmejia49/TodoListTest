@@ -86,15 +86,18 @@
 <ng-template #listOptionsModalTemplate>
   <div class="modal-header">
     <h4 class="modal-title pull-left">List Options</h4>
-    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="listOptionsModalRef.hide()">
+    <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="updateListCancelled">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <div class="form-group">
       <label for="inputListTitle">Title</label>
-      <input type="text" class="form-control" id="inputListTitle" placeholder="List name..."
+      <input type="text"   [ngClass]="{ 'is-invalid': listOptionsEditor.error }" id="inputListTitle" placeholder="List name..."
              [(ngModel)]="listOptionsEditor.title" (keyup.enter)="updateListOptions()" />
+      <div *ngIf="listOptionsEditor.error" class="invalid-feedback">
+        {{ listOptionsEditor.error }}
+      </div>
     </div>
     <div *ngIf="debug">
       <pre>{{ listOptionsEditor | json }}</pre>
@@ -106,7 +109,7 @@
         <button class="btn btn-default text-danger" (click)="confirmDeleteList(deleteListModalTemplate)">Delete</button>
       </div>
       <div class="float-end">
-        <button class="btn btn-default" (click)="listOptionsModalRef.hide()">Cancel</button>
+        <button class="btn btn-default" (click)="updateListCancelled()">Cancel</button>
         <button class="btn btn-primary" (click)="updateListOptions()">Update</button>
       </div>
     </div>
@@ -232,8 +235,6 @@
   <div class="modal-header">
     <h4 class="modal-title pull-left">Tags</h4>
     <button type="button" class="close btn-close pull-right" aria-label="Close" (click)="tagsModalRef.hide()">
-      ="
-      "v
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
@@ -245,7 +246,7 @@
     <br/>
     <div class="list-group mb-2 tag-list">
       <ul class="list-group">
-        <li class="list-group-item" *ngFor="let tag of tagLists; index as i">
+        <li class="list-group-item" [ngStyle]="{'background-color': (tag.id == selectedTag?.id) ? '#32a1fd' : '#ffffff'}" *ngFor="let tag of tagLists; index as i">
           <div class="d-flex">
             <div class="flex-fill" (click)="editTag(tag)">
               <span>{{tag.name}}</span>
@@ -263,7 +264,10 @@
     <form [formGroup]="tagsFormGroup" class="form">
       <div class="form-group">
         <label for="tag">Tag's Name</label>
-        <input type="text" id="tag" class="form-control" rows="3" formControlName="name" />
+        <input type="text" id="tag" [ngClass]="{ 'is-invalid': tagEditor.error }" class="form-control" rows="3" formControlName="name" />
+        <div *ngIf="tagEditor.error" class="invalid-feedback">
+          {{ tagEditor.error }}
+        </div>
       </div>
       <br />
       <div class="float-end">

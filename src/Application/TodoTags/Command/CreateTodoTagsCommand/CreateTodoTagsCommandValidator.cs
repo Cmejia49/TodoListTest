@@ -18,8 +18,15 @@ public class CreateTodoTagsCommandValidator : AbstractValidator<CreateTodoTagsCo
         _context = context;
 
         RuleFor(v => v.Name)
-     .NotEmpty().WithMessage("Name is required.")
-     .MaximumLength(25).WithMessage("Name must not exceed 25 characters.");
+       .NotEmpty().WithMessage("Name is required.")
+       .MaximumLength(25).WithMessage("Name must not exceed 25 characters.")
+       .MustAsync(BeUniqueName).WithMessage("The specified name already exists.");
+    }
+
+    public async Task<bool> BeUniqueName(string name, CancellationToken cancellationToken)
+    {
+        return await _context.TodoTags
+            .AllAsync(l => l.Name != name, cancellationToken);
     }
 
 }

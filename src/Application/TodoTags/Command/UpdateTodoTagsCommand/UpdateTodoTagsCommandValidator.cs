@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Todo_App.Application.Common.Interfaces;
 
 namespace Todo_App.Application.TodoTags.Command.UpdateTodoTagsCommand;
@@ -18,7 +19,15 @@ public class UpdateTodoTagsCommandValidator : AbstractValidator<UpdateTodoTagsCo
 
         RuleFor(v => v.Name)
         .NotEmpty().WithMessage("Name is required.")
-        .MaximumLength(25).WithMessage("Name must not exceed 25 characters.");
+        .MaximumLength(25).WithMessage("Name must not exceed 25 characters.")
+        .MustAsync(BeUniqueName).WithMessage("The specified name already exists."); 
 
+    }
+
+    public async Task<bool> BeUniqueName(UpdateTodoTagsCommand model,string name, CancellationToken cancellationToken)
+    {
+        return await _context.TodoTags
+            .Where(l => l.Id != model.Id)
+            .AllAsync(l => l.Name != name, cancellationToken);
     }
 }

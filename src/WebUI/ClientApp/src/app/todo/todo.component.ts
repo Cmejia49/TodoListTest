@@ -34,6 +34,7 @@ export class TodoComponent implements OnInit {
   deleteListModalRef: BsModalRef;
   itemDetailsModalRef: BsModalRef;
   tagsModalRef: BsModalRef;
+  tagEditor: any = {};
   color: string = '#FFFFFF';
   searchTitleChange = new Subject<string>();
   title: string;
@@ -106,6 +107,11 @@ export class TodoComponent implements OnInit {
     this.newListEditor = {};
   }
 
+  updateListCancelled(): void {
+    this.listOptionsModalRef.hide();
+    this.newListEditor = {};
+  }
+
   addList(): void {
     const list = {
       id: 0,
@@ -122,10 +128,10 @@ export class TodoComponent implements OnInit {
         this.newListEditor = {};
       },
       error => {
-        const errors = JSON.parse(error.response);
-
-        if (errors && errors.Title) {
-          this.newListEditor.error = errors.Title[0];
+        const ex = JSON.parse(error.response);
+        const titleNum = ex.errors.Title?.length || 0;
+        if (ex || titleNum > 0) {
+          this.newListEditor.error = ex.errors.Title[0];
         }
 
         setTimeout(() => document.getElementById('title').focus(), 250);
@@ -150,7 +156,15 @@ export class TodoComponent implements OnInit {
           this.listOptionsModalRef.hide();
         this.listOptionsEditor = {};
       },
-      error => console.error(error)
+      error => {
+        const ex = JSON.parse(error.response);
+  
+        const titleNum = ex.errors.Title?.length || 0;
+        if (ex || titleNum > 0) {
+          console.log(ex.errors.Title[0]);
+          this.listOptionsEditor.error = ex.errors.Title[0];
+        }
+      }
     );
   }
 
@@ -373,13 +387,18 @@ export class TodoComponent implements OnInit {
       } as CreateTodoTagsCommand)
       .subscribe(
         result => {
-          console.log("success", result);
           tag.id = result;
           this.tagLists.push(tag);
+          this.tagEditor = {};
         },
-        error => console.error(error)
+        error => {
+          const ex = JSON.parse(error.response);
+          const errorNum = ex.errors.Name?.length || 0;
+          if (ex || errorNum > 0) {
+            this.tagEditor.error = ex.errors.Name[0];
+          }
+        }
     );
-    this.tagsModalRef.hide();
     this.tagsFormGroup.reset();
 
   }
@@ -394,7 +413,13 @@ export class TodoComponent implements OnInit {
 
     this.tagsClient.update(tag.id, tag).subscribe(
         () => { this.updateTaginTodoList(tag.id, tag) },
-        error => console.error(error)
+         error => {
+          const ex = JSON.parse(error.response);
+          const errorNum = ex.errors.Name?.length || 0;
+          if (ex || errorNum > 0) {
+            this.tagEditor.error = ex.errors.Name[0];
+          }
+        }
     );
 
   }
@@ -407,7 +432,8 @@ export class TodoComponent implements OnInit {
         this.selectedList.items[index].tags = tag;
       }
     });
-    this.tagsModalRef.hide();
+    this.tagEditor = {};
+    this.selectedTag = null;
     this.tagsFormGroup.reset();
   }
 

@@ -12,7 +12,7 @@ namespace Todo_App.Application.TodoTags.Command.CreateTodoTagsCommand;
 public class CreateTodoTagsCommand : IRequest<int>
 {
 
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
 }
 

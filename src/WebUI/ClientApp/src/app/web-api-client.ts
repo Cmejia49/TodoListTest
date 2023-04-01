@@ -2258,7 +2258,7 @@ export interface ISortTagsDto {
 }
 
 export class CreateTodoTagsCommand implements ICreateTodoTagsCommand {
-    name?: string | undefined;
+    name?: string;
 
     constructor(data?: ICreateTodoTagsCommand) {
         if (data) {
@@ -2290,7 +2290,7 @@ export class CreateTodoTagsCommand implements ICreateTodoTagsCommand {
 }
 
 export interface ICreateTodoTagsCommand {
-    name?: string | undefined;
+    name?: string;
 }
 
 export class UpdateTodoTagsCommand implements IUpdateTodoTagsCommand {
