@@ -19,6 +19,19 @@ public class UpdateTodoItemDetailTests : BaseTestFixture
     {
         var command = new UpdateTodoItemCommand { Id = 99, Title = "New Title" };
         await FluentActions.Invoking(() => SendAsync(command)).Should().ThrowAsync<NotFoundException>();
+
+    }
+
+    [Test]
+    public async Task ShouldValidateColorValue()
+    {
+
+        var command = new UpdateTodoItemDetailCommand
+        {
+            ItemColour = "#19507e"
+        };
+
+        await FluentActions.Invoking(() => SendAsync(command)).Should().ThrowAsync<NotFoundException>();
     }
 
     [Test]
@@ -42,7 +55,9 @@ public class UpdateTodoItemDetailTests : BaseTestFixture
             Id = itemId,
             ListId = listId,
             Note = "A1",
-            Priority = PriorityLevel.High
+            Priority = PriorityLevel.High,
+            ItemColour = "#19507e"
+
         };
 
         await SendAsync(command);
