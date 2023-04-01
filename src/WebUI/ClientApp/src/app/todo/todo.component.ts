@@ -276,16 +276,4 @@ export class TodoComponent implements OnInit {
     this.deleting = false;
   }
 
-
-  searchTodoItem(title: string){
-    let id = this.selectedList.id;
-    this.itemsClient.todoItemSearch(id, title, 1, 10).subscribe(
-      result => {
-        console.log(result);
-        this.selectedList.items = result.items;
-        this.searching = false;
-      }, error => { console.error(error); this.searching = false; }
-    )
-  }
-
 }
