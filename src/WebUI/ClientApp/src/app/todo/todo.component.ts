@@ -1,8 +1,6 @@
 import { Component, TemplateRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { fromEvent, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 import {
 
   TodoListsClient, TodoItemsClient,
@@ -32,7 +30,6 @@ export class TodoComponent implements OnInit {
   deleteListModalRef: BsModalRef;
   itemDetailsModalRef: BsModalRef;
   color: string = '#FFFFFF';
-  searchTitleChange = new Subject<string>();
   title: string;
   searching = true;
   selectedSort = null;
@@ -44,8 +41,6 @@ export class TodoComponent implements OnInit {
     itemColour: [''],
   });
 
-
-  @ViewChild('searchInput', { static: true }) itemSearchInput!: ElementRef;
 
   constructor(
     private listsClient: TodoListsClient,

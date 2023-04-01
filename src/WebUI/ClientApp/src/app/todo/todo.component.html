@@ -3,15 +3,6 @@
 <p>This is a complex todo list component.</p>
 
 <p *ngIf="!lists"><em>Loading...</em></p>
-
-<div class="bg-light">
-  <div class="d-flex flex-row justify-content-between">
-    <div class="d-flex p-2">
-      <input class="form-group me-2" type="search" #searchInput
-             placeholder="Search" aria-label="Search">
-    </div>
-  </div>
-</div>
 <div *ngIf="lists">
   <div class="row">
     <div class="col-sm-4">
