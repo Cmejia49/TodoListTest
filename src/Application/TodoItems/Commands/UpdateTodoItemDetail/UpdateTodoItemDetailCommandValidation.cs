@@ -21,7 +21,14 @@ public class UpdateTodoItemDetailCommandValidation : AbstractValidator<UpdateTod
 
     private bool BeValidHexColor(string? color)
     {
-        return Regex.Match(color, "^#[0-9a-fA-F]{6}$").Success;
+        if (string.IsNullOrEmpty(color))
+        {
+            return true;
+        }
+        else
+        {
+            return Regex.Match(color, "^#[0-9a-fA-F]{6}$").Success;
+        }
     }
 
 
