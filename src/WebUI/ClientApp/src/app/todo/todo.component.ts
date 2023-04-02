@@ -69,7 +69,6 @@ export class TodoComponent implements OnInit {
       result => {
         this.lists = result.lists;
         this.priorityLevels = result.priorityLevels;
-        console.log(result);
         this.tagLists = result.tags;
         if (this.lists.length) {
           this.selectedList = this.lists[0];
@@ -432,6 +431,13 @@ export class TodoComponent implements OnInit {
         this.selectedList.items[index].tags = tag;
       }
     });
+
+    this.tagLists.forEach((lisTag, index) => {
+      if (lisTag?.id === id) {
+        this.tagLists[index] = tag;
+      }
+    });
+
     this.tagEditor = {};
     this.selectedTag = null;
     this.tagsFormGroup.reset();
